@@ -5,6 +5,8 @@ extends CharacterBody3D
 @export var gravity := 9.8
 @export_range(1.0, 89.0, 1.0) var max_floor_angle_degrees := 42.0
 @export var floor_snap_distance := 0.25
+@export var stop_on_walkable_slopes := true
+@export var constant_slope_speed := true
 
 @onready var head: Node3D = $Head
 
@@ -13,6 +15,8 @@ var look_pitch := 0.0
 func _ready() -> void:
 	floor_max_angle = deg_to_rad(max_floor_angle_degrees)
 	floor_snap_length = floor_snap_distance
+	floor_stop_on_slope = stop_on_walkable_slopes
+	floor_constant_speed = constant_slope_speed
 	_capture_mouse()
 
 func _unhandled_input(event: InputEvent) -> void:
