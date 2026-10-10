@@ -30,13 +30,16 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	var input_vector := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
 	var movement := (transform.basis * Vector3(input_vector.x, 0.0, input_vector.y)).normalized()
+	if is_on_floor() and movement != Vector3.ZERO:
+		movement = movement.slide(get_floor_normal()).normalized()
+
 	velocity.x = movement.x * move_speed
 	velocity.z = movement.z * move_speed
 
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
-		velocity.y = 0.0
+		velocity.y = movement.y * move_speed
 
 	move_and_slide()
 
