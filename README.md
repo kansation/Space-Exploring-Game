@@ -10,9 +10,9 @@ Documentation foundation for a first-person space exploration game. The Godot pr
 
 ## Current setup status
 
-- Repository initialized on `main`; no remote is configured yet.
+- Repository is on `main` with `origin` configured at `https://github.com/kansation/Space-Exploring-Game.git`.
 - GDScript is the selected implementation language.
-- The installed Godot executable reports `4.7.stable.official.5b4e0cb0f`, not the expected 4.7.2 .NET; this needs resolution before project creation.
-- The next setup step is to resolve the Godot version/variant and establish a private remote, then review the foundation documents before creating `game/project.godot`.
+- The selected Godot executable is `/Users/liambeck/Downloads/Godot_mono.app/Contents/MacOS/Godot`, reporting `4.7.2.stable.mono.official.ed1daf0bf`.
+- The next setup step is to review the foundation documents before creating `game/project.godot`.
 
 This repository intentionally contains documentation and setup files only.

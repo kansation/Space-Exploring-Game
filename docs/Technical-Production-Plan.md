@@ -9,7 +9,7 @@ References: [Project Charter](Project-Charter.md) · [Game Design](Game-Design.m
 
 This document owns tooling, implementation approach, file organization, development workflow, performance targets, and validation procedures. The Charter owns purpose and scope; Game Design owns player-facing rules. Reference those documents instead of redefining their decisions.
 
-Confirmed: Godot has been selected, with GDScript. Setup inspection on October 10, 2026 found Godot `4.7.stable.official.5b4e0cb0f` in `/Applications/Godot.app`; this does not match the expected 4.7.2 .NET report, and the .NET variant was not verified. Operating-system compatibility, rendering performance, and export capability have not been inspected or tested.
+Confirmed: Godot has been selected, with GDScript. Setup inspection on October 10, 2026 selected `/Users/liambeck/Downloads/Godot_mono.app/Contents/MacOS/Godot`, which reports `4.7.2.stable.mono.official.ed1daf0bf`. This is the Mono/.NET-capable build; no C# project or .NET-specific game dependency is intended. A separate standard build at `/Applications/Godot.app/Contents/MacOS/Godot` reports `4.7.stable.official.5b4e0cb0f`. Operating-system compatibility, rendering performance, and export capability have not been inspected or tested.
 
 Everything below is a proposed production baseline unless explicitly described as confirmed or completed. Approval of this document does not establish that a technical test has passed.
 
@@ -17,7 +17,7 @@ Everything below is a proposed production baseline unless explicitly described a
 
 | Tool | Purpose | Approach |
 | --- | --- | --- |
-| Godot 4.7.2 .NET | Editor and game runtime | Use the reported installation with GDScript; no C# project or .NET-specific game dependency is intended. Verify the exact build during setup. |
+| Godot 4.7.2 Mono/.NET-capable | Editor and game runtime | Use the selected 4.7.2 Mono build with GDScript; no C# project or .NET-specific game dependency is intended. |
 | Godot script editor | Initial code editing | Start here; a separate editor is optional, not a prerequisite. |
 | Git and a private GitHub repository | Version history and off-device copy | Keep this project separate from Origins. No paid service required for the initial workflow. |
 | Markdown | Core documents | Keep the three authoritative documents in the repository alongside the code. |
@@ -172,4 +172,4 @@ Milestone review records: passed criteria, failed or unresolved criteria, actual
 4. Clone onto the Mac in the chosen local development location.
 5. Verify Godot and begin F0/F1 only after the foundation documents are reviewed.
 
-Revision record: October 9, 2026 — initial draft. October 10, 2026 — documentation repository initialized and local Godot executable inspected; version discrepancy recorded. No technical validation or Godot project creation is implied.
+Revision record: October 9, 2026 — initial draft. October 10, 2026 — documentation repository initialized; Godot standard and Mono builds inspected, with the 4.7.2 Mono build selected. No technical validation or Godot project creation is implied.
