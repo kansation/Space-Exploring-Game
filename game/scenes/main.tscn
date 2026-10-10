@@ -1,3 +1,69 @@
-[gd_scene format=3]
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(24, 0.2, 24)
+
+[sub_resource type="BoxShape3D" id="BoxShape_floor"]
+size = Vector3(24, 0.2, 24)
+
+[sub_resource type="BoxMesh" id="BoxMesh_block_a"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape_block_a"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_block_b"]
+size = Vector3(1.5, 3, 1.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape_block_b"]
+size = Vector3(1.5, 3, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_block_c"]
+size = Vector3(3, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape_block_c"]
+size = Vector3(3, 1, 1)
 
 [node name="Main" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+position = Vector3(0, -0.1, 0)
+mesh = SubResource("BoxMesh_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+position = Vector3(0, -0.1, 0)
+shape = SubResource("BoxShape_floor")
+
+[node name="BlockA" type="StaticBody3D" parent="."]
+position = Vector3(0, 1, -4)
+
+[node name="Mesh" type="MeshInstance3D" parent="BlockA"]
+mesh = SubResource("BoxMesh_block_a")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BlockA"]
+shape = SubResource("BoxShape_block_a")
+
+[node name="BlockB" type="StaticBody3D" parent="."]
+position = Vector3(4, 1.5, -7)
+
+[node name="Mesh" type="MeshInstance3D" parent="BlockB"]
+mesh = SubResource("BoxMesh_block_b")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BlockB"]
+shape = SubResource("BoxShape_block_b")
+
+[node name="BlockC" type="StaticBody3D" parent="."]
+position = Vector3(-4, 0.5, -8)
+
+[node name="Mesh" type="MeshInstance3D" parent="BlockC"]
+mesh = SubResource("BoxMesh_block_c")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BlockC"]
+shape = SubResource("BoxShape_block_c")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector3(0, 0.2, 5)
