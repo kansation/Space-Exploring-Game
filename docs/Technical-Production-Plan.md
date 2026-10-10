@@ -1,7 +1,7 @@
 # Space Exploration Game — Technical & Production Plan
 
 Version: 0.1 · October 9, 2026
-Status: Documentation repository established; Godot project and game implementation have not been created. Foundation review remains open.
+Status: F0 empty project created and verified; movement, content, performance, and export validation remain open.
 Owner: Liam Beck
 References: [Project Charter](Project-Charter.md) · [Game Design](Game-Design.md)
 
@@ -39,8 +39,8 @@ Proposed Mac working location: a dedicated local development folder outside live
 | `docs/Technical-Production-Plan.md` | This plan | Repository setup |
 | `AGENTS.md` | Short operational guardrails for code assistants; references core documents | Before AI-assisted code work |
 | `.gitignore` | Exclude generated caches, local settings, exports, and secrets | Repository setup |
-| `game/project.godot` | Godot project entry point | After documentation review |
-| `game/scenes/` | Scene files, initially one foundation scene | When the first scene is needed |
+| `game/project.godot` | Godot project entry point | F0 empty project |
+| `game/scenes/` | Scene files, initially one foundation scene | F0 empty project |
 | `game/scripts/` | GDScript scripts | When movement implementation begins |
 | `game/assets/` | Runtime assets | When assets are introduced |
 | `docs/assets.csv` | Sources, licenses, modifications, attribution, and usage | Before importing third-party assets |
@@ -64,7 +64,7 @@ Initial document files supplied through chat are starting deliverables. Once imp
 - Retain an additional dated local backup of important source and documents, separate from the working directory. A pushed commit is an off-device copy, but not a substitute for recovering uncommitted work.
 - Test recovery by opening a fresh checkout or copy at the export checkpoint. Never validate recovery by overwriting the only working copy.
 
-The initial commit should contain documentation and setup files only. No game scaffold is required for that commit.
+The initial documentation commit contains setup files only. F0 now adds only the empty Godot project entry point and one empty main scene; no game systems or content are included.
 
 ## 5. Minimal implementation approach
 
@@ -172,4 +172,6 @@ Milestone review records: passed criteria, failed or unresolved criteria, actual
 4. Clone onto the Mac in the chosen local development location.
 5. Verify Godot and begin F0/F1 only after the foundation documents are reviewed.
 
-Revision record: October 9, 2026 — initial draft. October 10, 2026 — documentation repository initialized; Godot standard and Mono builds inspected, with the 4.7.2 Mono build selected. No technical validation or Godot project creation is implied.
+F0 setup result — October 10, 2026: Using `/Users/liambeck/Downloads/Godot_mono.app/Contents/MacOS/Godot` (`4.7.2.stable.mono.official.ed1daf0bf`), created `game/project.godot` and an empty `game/scenes/main.tscn` with the Mobile renderer configured provisionally for the M2 MacBook. The project was opened and the empty scene ran without reported errors in headless validation. Git tracks the project and scene source; generated `.godot/` cache remains ignored. Performance and export capability are not validated.
+
+Revision record: October 9, 2026 — initial draft. October 10, 2026 — documentation repository initialized; Godot standard and Mono builds inspected, with the 4.7.2 Mono build selected. October 10, 2026 — empty F0 project and main scene created; Mobile renderer recorded as provisional and empty-scene validation completed. No movement or gameplay implementation is implied.
