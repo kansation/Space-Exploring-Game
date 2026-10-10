@@ -1,0 +1,24 @@
+# Godot generated project cache and editor/import state
+.godot/
+*.tmp
+
+# Exported builds and local packaging
+*.apk
+*.aab
+*.app
+*.dmg
+*.exe
+*.pck
+*.zip
+export/
+exports/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# OS/editor noise
+.DS_Store
+.vscode/
+.idea/
