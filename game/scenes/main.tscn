@@ -93,7 +93,7 @@ shape = SubResource("BoxShape_block_c")
 
 [node name="GentleRamp" type="StaticBody3D" parent="TerrainCourse"]
 position = Vector3(7, 0.9, -1)
-rotation = Vector3(-0.245, 0, 0)
+rotation = Vector3(0.245, 0, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/GentleRamp"]
 mesh = SubResource("BoxMesh_gentle_ramp")
@@ -103,7 +103,7 @@ shape = SubResource("BoxShape_gentle_ramp")
 
 [node name="SteepRamp" type="StaticBody3D" parent="TerrainCourse"]
 position = Vector3(7, 2.6, -8)
-rotation = Vector3(-0.95, 0, 0)
+rotation = Vector3(0.95, 0, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/SteepRamp"]
 mesh = SubResource("BoxMesh_steep_ramp")
@@ -113,7 +113,7 @@ shape = SubResource("BoxShape_steep_ramp")
 
 [node name="CrestUp" type="StaticBody3D" parent="TerrainCourse"]
 position = Vector3(7, 0.85, -14)
-rotation = Vector3(-0.5, 0, 0)
+rotation = Vector3(0.5, 0, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/CrestUp"]
 mesh = SubResource("BoxMesh_crest")
@@ -123,7 +123,7 @@ shape = SubResource("BoxShape_crest")
 
 [node name="CrestDown" type="StaticBody3D" parent="TerrainCourse"]
 position = Vector3(7, 0.85, -17.5)
-rotation = Vector3(0.5, 0, 0)
+rotation = Vector3(-0.5, 0, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/CrestDown"]
 mesh = SubResource("BoxMesh_crest")
