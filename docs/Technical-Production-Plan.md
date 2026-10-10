@@ -1,7 +1,7 @@
 # Space Exploration Game — Technical & Production Plan
 
 Version: 0.1 · October 9, 2026
-Status: F1 movement implementation prepared; manual movement and collision checks remain open. Content, performance, and export validation remain open.
+Status: F1 movement manually confirmed; F2 terrain collision course implemented and awaiting manual review. Content, performance, and export validation remain open.
 Owner: Liam Beck
 References: [Project Charter](Project-Charter.md) · [Game Design](Game-Design.md)
 
@@ -94,7 +94,7 @@ A terrain add-on, procedural mesh generator, voxel system, or world streamer req
 | --- | --- | --- |
 | F0 — Setup | Documentation repository, verified engine version, minimal project when approved | Files are tracked correctly; project opens; no unresolved setup blocker. |
 | F1 — Movement | First-person look, walking, gravity, floor and obstacles; jump remains deferred | Camera/control comfort and collision test pass. |
-| F2 — Landscape | Slopes, ridge, destination, clear test boundary | Walkable routes are reliable; scale is acceptable. |
+| F2 — Landscape | Primitive gentle/steep ramps, crest, lower floor, and short drop | Walkable routes, slope behavior, sliding, and falling are reliable; manual review pending. |
 | F3 — Appearance | Small material set, lighting, representative environmental feature | Liam accepts an initial grounded visual direction; performance measured. |
 | F4 — Curiosity | One partially concealed feature or clue | Another player investigates without being told its location when a tester is available. Otherwise mark curiosity evidence provisional. |
 | F5 — Export and repeatability | Standalone Mac build and a second small environment variation | Build runs independently; performance and reproduction effort recorded. |
@@ -174,6 +174,8 @@ Milestone review records: passed criteria, failed or unresolved criteria, actual
 
 F0 setup result — October 10, 2026: Using `/Users/liambeck/Downloads/Godot_mono.app/Contents/MacOS/Godot` (`4.7.2.stable.mono.official.ed1daf0bf`), created `game/project.godot` and an empty `game/scenes/main.tscn` with the Mobile renderer configured provisionally for the M2 MacBook. The project was opened and the empty scene ran without reported errors in headless validation. Git tracks the project and scene source; generated `.godot/` cache remains ignored. Performance and export capability are not validated.
 
-F1 movement result — October 10, 2026: Added a bounded `CharacterBody3D` controller with normalized WASD input, mouse look, gravity, floor/wall collision, and Escape/click mouse release/capture behavior. Added only a flat collision floor and three primitive block obstacles. Automated validation loaded the project, scenes, and script with the pinned Mono executable and ran the scene to clean exit; Mobile rendering initialized on the Apple M2. Manual checks still pending: comfortable WASD/mouse feel, diagonal-speed feel, Escape/click recapture, gravity settling, and collision against the floor and each block. No jump, sprint, terrain, external assets, or gameplay systems were added.
+F1 movement result — October 10, 2026: Added a bounded `CharacterBody3D` controller with normalized WASD input, mouse look, gravity, floor/wall collision, and Escape/click mouse release/capture behavior. Added only a flat collision floor and three primitive block obstacles. The manual F1 pass confirmed grounded movement, mouse look/capture behavior, gravity settling, and flat-floor/block collision. Automated validation loaded the project, scenes, and script with the pinned Mono executable and ran the scene to clean exit; Mobile rendering initialized on the Apple M2. No jump, sprint, terrain, external assets, or gameplay systems were added.
 
-Revision record: October 9, 2026 — initial draft. October 10, 2026 — documentation repository initialized; Godot standard and Mono builds inspected, with the 4.7.2 Mono build selected. October 10, 2026 — empty F0 project and main scene created; Mobile renderer recorded as provisional and empty-scene validation completed. October 10, 2026 — bounded F1 movement implementation added; automated load/run checks pass and manual playtest checks remain open.
+F2 terrain result — October 10, 2026: Extended the existing scene with a separate primitive collision course containing a gentle walkable ramp, a steep ramp, a two-part crest, and a short drop onto a lower floor. The original flat floor and blocks remain. The controller exposes `max_floor_angle_degrees` and `floor_snap_distance`; the steep ramp is intended to exercise the existing collision/sliding behavior without adding jump or sprint logic. Automated validation passes scene/script loading and clean headless exit. Manual checks pending: grounded traversal of the gentle ramp, slope-limit behavior on the steep ramp, sliding, crest crossing, falling to the lower floor, and recovery after the drop. The scene is ready for Liam's Mac playtest.
+
+Revision record: October 9, 2026 — initial draft. October 10, 2026 — documentation repository initialized; Godot standard and Mono builds inspected, with the 4.7.2 Mono build selected. October 10, 2026 — empty F0 project and main scene created; Mobile renderer recorded as provisional and empty-scene validation completed. October 10, 2026 — bounded F1 movement implementation added and manually confirmed. October 10, 2026 — primitive F2 terrain collision course added; automated checks pass and manual slope/drop checks remain open.

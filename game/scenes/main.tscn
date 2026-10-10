@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 
@@ -25,6 +25,30 @@ size = Vector3(3, 1, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape_block_c"]
 size = Vector3(3, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gentle_ramp"]
+size = Vector3(4, 0.4, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape_gentle_ramp"]
+size = Vector3(4, 0.4, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_steep_ramp"]
+size = Vector3(4, 0.4, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape_steep_ramp"]
+size = Vector3(4, 0.4, 5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_crest"]
+size = Vector3(4, 0.4, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape_crest"]
+size = Vector3(4, 0.4, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lower_floor"]
+size = Vector3(4, 0.2, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape_lower_floor"]
+size = Vector3(4, 0.2, 8)
 
 [node name="Main" type="Node3D"]
 
@@ -64,6 +88,57 @@ mesh = SubResource("BoxMesh_block_c")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BlockC"]
 shape = SubResource("BoxShape_block_c")
+
+[node name="TerrainCourse" type="Node3D" parent="."]
+
+[node name="GentleRamp" type="StaticBody3D" parent="TerrainCourse"]
+position = Vector3(7, 0.9, -1)
+rotation = Vector3(-0.245, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/GentleRamp"]
+mesh = SubResource("BoxMesh_gentle_ramp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TerrainCourse/GentleRamp"]
+shape = SubResource("BoxShape_gentle_ramp")
+
+[node name="SteepRamp" type="StaticBody3D" parent="TerrainCourse"]
+position = Vector3(7, 2.6, -8)
+rotation = Vector3(-0.95, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/SteepRamp"]
+mesh = SubResource("BoxMesh_steep_ramp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TerrainCourse/SteepRamp"]
+shape = SubResource("BoxShape_steep_ramp")
+
+[node name="CrestUp" type="StaticBody3D" parent="TerrainCourse"]
+position = Vector3(7, 0.85, -14)
+rotation = Vector3(-0.5, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/CrestUp"]
+mesh = SubResource("BoxMesh_crest")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TerrainCourse/CrestUp"]
+shape = SubResource("BoxShape_crest")
+
+[node name="CrestDown" type="StaticBody3D" parent="TerrainCourse"]
+position = Vector3(7, 0.85, -17.5)
+rotation = Vector3(0.5, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/CrestDown"]
+mesh = SubResource("BoxMesh_crest")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TerrainCourse/CrestDown"]
+shape = SubResource("BoxShape_crest")
+
+[node name="LowerFloor" type="StaticBody3D" parent="TerrainCourse"]
+position = Vector3(7, -2, -23)
+
+[node name="Mesh" type="MeshInstance3D" parent="TerrainCourse/LowerFloor"]
+mesh = SubResource("BoxMesh_lower_floor")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TerrainCourse/LowerFloor"]
+shape = SubResource("BoxShape_lower_floor")
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 position = Vector3(0, 0.2, 5)
