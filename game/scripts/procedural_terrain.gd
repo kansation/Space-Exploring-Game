@@ -88,22 +88,11 @@ func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) ->
 	var rock_material := StandardMaterial3D.new()
 	rock_material.albedo_color = Color(0.3, 0.31, 0.29, 1.0)
 	rock_material.roughness = 1.0
-	var rock_meshes: Array[Mesh] = []
-	var box := BoxMesh.new()
-	box.size = Vector3.ONE
-	box.material = rock_material
-	rock_meshes.append(box)
-	var cylinder := CylinderMesh.new()
-	cylinder.top_radius = 0.45
-	cylinder.bottom_radius = 0.55
-	cylinder.height = 1.0
-	cylinder.material = rock_material
-	rock_meshes.append(cylinder)
-	var sphere := SphereMesh.new()
-	sphere.radius = 0.55
-	sphere.height = 1.0
-	sphere.material = rock_material
-	rock_meshes.append(sphere)
+	var rock_meshes: Array[Mesh] = [
+		_make_rock_mesh(rock_material, 7, 0.58, 0.7, 0.34),
+		_make_rock_mesh(rock_material, 8, 0.52, 0.62, 0.42),
+		_make_rock_mesh(rock_material, 6, 0.64, 0.5, 0.28)
+	]
 
 	var target_count := int(round(terrain_size * terrain_size / 100.0 * rock_density))
 	var placed_count := 0
@@ -138,6 +127,36 @@ func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) ->
 			rock.add_child(collision)
 		placed_count += 1
 	print("Procedural rocks: seed=%d count=%d signature=%d" % [seed, placed_count, placement_signature])
+
+func _make_rock_mesh(material: Material, points: int, middle_radius: float, top_radius: float, height_variation: float) -> ArrayMesh:
+	var surface_tool := SurfaceTool.new()
+	surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rings := [0.0, 0.52, 1.0]
+	var radii := [0.5, middle_radius, top_radius]
+	for ring in range(2):
+		for point in range(points):
+			var a0 := TAU * float(point) / float(points)
+			var a1 := TAU * float((point + 1) % points) / float(points)
+			var r0: float = radii[ring] * (1.0 + sin(float(point * 17 + ring * 3)) * 0.12)
+			var r1: float = radii[ring] * (1.0 + sin(float((point + 1) * 17 + ring * 3)) * 0.12)
+			var y0: float = rings[ring] + sin(float(point * 11)) * height_variation * 0.2
+			var y1: float = rings[ring] + sin(float((point + 1) * 11)) * height_variation * 0.2
+			var next_y0: float = rings[ring + 1] + sin(float(point * 11 + 5)) * height_variation
+			var next_y1: float = rings[ring + 1] + sin(float((point + 1) * 11 + 5)) * height_variation
+			var p0 := Vector3(cos(a0) * r0, y0, sin(a0) * r0)
+			var p1 := Vector3(cos(a1) * r1, y1, sin(a1) * r1)
+			var p2 := Vector3(cos(a0) * radii[ring + 1], next_y0, sin(a0) * radii[ring + 1])
+			var p3 := Vector3(cos(a1) * radii[ring + 1], next_y1, sin(a1) * radii[ring + 1])
+			surface_tool.add_vertex(p0)
+			surface_tool.add_vertex(p2)
+			surface_tool.add_vertex(p1)
+			surface_tool.add_vertex(p1)
+			surface_tool.add_vertex(p2)
+			surface_tool.add_vertex(p3)
+	surface_tool.generate_normals()
+	var mesh := surface_tool.commit()
+	mesh.surface_set_material(0, material)
+	return mesh
 
 func _sample_height(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite, world_x: float, world_z: float) -> float:
 	return broad_noise.get_noise_2d(world_x, world_z) * terrain_height + detail_noise.get_noise_2d(world_x, world_z) * detail_height
