@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/curved_planet.gd" id="1_planet"]
+[ext_resource type="Script" path="res://scripts/curved_planet_player.gd" id="2_player"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat"]
+sky_top_color = Color(0.12, 0.22, 0.42, 1)
+sky_horizon_color = Color(0.72, 0.80, 0.88, 1)
+ground_bottom_color = Color(0.12, 0.14, 0.16, 1)
+ground_horizon_color = Color(0.55, 0.58, 0.56, 1)
+
+[sub_resource type="Sky" id="Sky"]
+sky_material = SubResource("SkyMat")
+
+[sub_resource type="Environment" id="Environment"]
+background_mode = 2
+sky = SubResource("Sky")
+ambient_light_source = 3
+ambient_light_energy = 0.7
+tonemap_mode = 2
+
+[sub_resource type="CapsuleShape3D" id="PlayerShape"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="PlayerMesh"]
+radius = 0.35
+height = 1.8
+
+[node name="CurvedPlanet" type="Node3D"]
+script = ExtResource("1_planet")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-45, -35, 0)
+light_energy = 1.4
+shadow_enabled = true
+
+[node name="Patches" type="Node3D" parent="."]
+
+[node name="Player" type="CharacterBody3D" parent="."]
+script = ExtResource("2_player")
+position = Vector3(0, 42, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+position = Vector3(0, 0.9, 0)
+shape = SubResource("PlayerShape")
+
+[node name="Body" type="MeshInstance3D" parent="Player"]
+position = Vector3(0, 0.9, 0)
+mesh = SubResource("PlayerMesh")
+cast_shadow = 1
+
+[node name="Head" type="Node3D" parent="Player"]
+position = Vector3(0, 1.55, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Player/Head"]
+current = true
