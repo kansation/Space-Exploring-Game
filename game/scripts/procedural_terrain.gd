@@ -8,8 +8,8 @@ extends Node3D
 @export_range(16, 128, 1) var mesh_resolution := 96
 @export var terrain_size := 100.0
 @export_range(0.0, 2.0, 0.01) var rock_density := 0.18
-@export_range(0.25, 4.0, 0.05) var rock_min_size := 0.6
-@export_range(0.25, 4.0, 0.05) var rock_max_size := 2.0
+@export_range(0.15, 4.0, 0.05) var rock_min_size := 0.3
+@export_range(0.15, 4.0, 0.05) var rock_max_size := 0.9
 @export var rock_spawn_exclusion_radius := 10.0
 
 @onready var terrain_mesh: MeshInstance3D = $TerrainMesh
@@ -110,7 +110,7 @@ func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) ->
 		var height := _sample_height(broad_noise, detail_noise, x, z)
 		var rock := StaticBody3D.new()
 		rock.name = "Rock_%02d" % placed_count
-		rock.position = Vector3(x, height + size * 0.45, z)
+		rock.position = Vector3(x, height, z)
 		rock.rotation_degrees = Vector3(rock_rng.randf_range(-8.0, 8.0), rock_rng.randf_range(0.0, 360.0), rock_rng.randf_range(-8.0, 8.0))
 		rock.scale = Vector3.ONE * size
 		placement_signature = placement_signature * 31 + int(round(x * 100.0))
@@ -120,7 +120,7 @@ func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) ->
 		var mesh_instance := MeshInstance3D.new()
 		mesh_instance.mesh = rock_meshes[rock_rng.randi_range(0, rock_meshes.size() - 1)]
 		rock.add_child(mesh_instance)
-		if size >= 1.25:
+		if size >= 0.65:
 			var collision := CollisionShape3D.new()
 			var shape := BoxShape3D.new()
 			shape.size = Vector3.ONE
@@ -140,8 +140,8 @@ func _make_rock_mesh(material: Material, points: int, middle_radius: float, top_
 			var a1 := TAU * float((point + 1) % points) / float(points)
 			var r0: float = radii[ring] * (1.0 + sin(float(point * 17 + ring * 3)) * 0.12)
 			var r1: float = radii[ring] * (1.0 + sin(float((point + 1) * 17 + ring * 3)) * 0.12)
-			var y0: float = rings[ring] + sin(float(point * 11)) * height_variation * 0.2
-			var y1: float = rings[ring] + sin(float((point + 1) * 11)) * height_variation * 0.2
+			var y0: float = rings[ring]
+			var y1: float = rings[ring]
 			var next_y0: float = rings[ring + 1] + sin(float(point * 11 + 5)) * height_variation
 			var next_y1: float = rings[ring + 1] + sin(float((point + 1) * 11 + 5)) * height_variation
 			var p0 := Vector3(cos(a0) * r0, y0, sin(a0) * r0)
@@ -154,6 +154,21 @@ func _make_rock_mesh(material: Material, points: int, middle_radius: float, top_
 			surface_tool.add_vertex(p1)
 			surface_tool.add_vertex(p2)
 			surface_tool.add_vertex(p3)
+	var bottom_center := Vector3(0.0, 0.0, 0.0)
+	var top_center := Vector3(0.0, 1.0, 0.0)
+	for point in range(points):
+		var a0 := TAU * float(point) / float(points)
+		var a1 := TAU * float((point + 1) % points) / float(points)
+		var bottom_a := Vector3(cos(a0) * radii[0], 0.0, sin(a0) * radii[0])
+		var bottom_b := Vector3(cos(a1) * radii[0], 0.0, sin(a1) * radii[0])
+		var top_a := Vector3(cos(a0) * radii[2], 1.0, sin(a0) * radii[2])
+		var top_b := Vector3(cos(a1) * radii[2], 1.0, sin(a1) * radii[2])
+		surface_tool.add_vertex(bottom_center)
+		surface_tool.add_vertex(bottom_b)
+		surface_tool.add_vertex(bottom_a)
+		surface_tool.add_vertex(top_center)
+		surface_tool.add_vertex(top_a)
+		surface_tool.add_vertex(top_b)
 	surface_tool.generate_normals()
 	var mesh := surface_tool.commit()
 	mesh.surface_set_material(0, material)
