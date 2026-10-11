@@ -3,6 +3,7 @@ extends CharacterBody3D
 @export var move_speed := 4.0
 @export var mouse_sensitivity := 0.0025
 @export var gravity := 9.8
+@export var jump_height := 1.2
 @export_range(1.0, 89.0, 1.0) var max_floor_angle_degrees := 42.0
 @export var floor_snap_distance := 0.25
 @export var step_height := 0.25
@@ -41,6 +42,8 @@ func _physics_process(delta: float) -> void:
 		velocity.y -= gravity * delta
 	else:
 		velocity.y = movement.y * move_speed
+		if Input.is_action_just_pressed("jump"):
+			velocity.y = sqrt(2.0 * gravity * jump_height)
 
 	if is_on_floor() and movement != Vector3.ZERO:
 		_try_step_up(movement * move_speed * delta)
