@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Space Exploration Game"
-run/main_scene="res://scenes/procedural_terrain.tscn"
+run/main_scene="res://scenes/chunked_terrain.tscn"
 config/features=PackedStringArray("4.7")
 
 [display]
