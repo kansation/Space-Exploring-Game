@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 
@@ -21,8 +21,12 @@ ambient_light_energy = 0.65
 tonemap_mode = 2
 
 [sub_resource type="StandardMaterial3D" id="Material_ground"]
-albedo_color = Color(0.22, 0.32, 0.2, 1)
+albedo_color = Color(0.25, 0.36, 0.22, 1)
 roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="Material_rock"]
+albedo_color = Color(0.28, 0.3, 0.31, 1)
+roughness = 0.92
 
 [sub_resource type="BoxMesh" id="Mesh_ground"]
 size = Vector3(100, 0.2, 100)
@@ -52,6 +56,48 @@ material = SubResource("Material_ground")
 [sub_resource type="BoxShape3D" id="Shape_valley"]
 size = Vector3(28, 0.2, 36)
 
+[sub_resource type="BoxMesh" id="Mesh_shelter_wall"]
+size = Vector3(0.8, 2.2, 7)
+material = SubResource("Material_rock")
+
+[sub_resource type="BoxShape3D" id="Shape_shelter_wall"]
+size = Vector3(0.8, 2.2, 7)
+
+[sub_resource type="BoxMesh" id="Mesh_shelter_back"]
+size = Vector3(6.5, 2.2, 0.8)
+material = SubResource("Material_rock")
+
+[sub_resource type="BoxShape3D" id="Shape_shelter_back"]
+size = Vector3(6.5, 2.2, 0.8)
+
+[sub_resource type="BoxMesh" id="Mesh_overlook"]
+size = Vector3(16, 0.6, 12)
+material = SubResource("Material_ground")
+
+[sub_resource type="BoxShape3D" id="Shape_overlook"]
+size = Vector3(16, 0.6, 12)
+
+[sub_resource type="BoxMesh" id="Mesh_rock_a"]
+size = Vector3(4, 5, 3)
+material = SubResource("Material_rock")
+
+[sub_resource type="BoxShape3D" id="Shape_rock_a"]
+size = Vector3(4, 5, 3)
+
+[sub_resource type="BoxMesh" id="Mesh_rock_b"]
+size = Vector3(3, 3.5, 3)
+material = SubResource("Material_rock")
+
+[sub_resource type="BoxShape3D" id="Shape_rock_b"]
+size = Vector3(3, 3.5, 3)
+
+[sub_resource type="BoxMesh" id="Mesh_rock_c"]
+size = Vector3(2.5, 2.5, 2.5)
+material = SubResource("Material_rock")
+
+[sub_resource type="BoxShape3D" id="Shape_rock_c"]
+size = Vector3(2.5, 2.5, 2.5)
+
 [node name="Landscape" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -71,6 +117,35 @@ mesh = SubResource("Mesh_ground")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
 position = Vector3(0, -0.1, 0)
 shape = SubResource("Shape_ground")
+
+[node name="ShelteredStart" type="Node3D" parent="."]
+
+[node name="WestWall" type="StaticBody3D" parent="ShelteredStart"]
+position = Vector3(-3.2, 1.1, 35)
+
+[node name="Mesh" type="MeshInstance3D" parent="ShelteredStart/WestWall"]
+mesh = SubResource("Mesh_shelter_wall")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ShelteredStart/WestWall"]
+shape = SubResource("Shape_shelter_wall")
+
+[node name="EastWall" type="StaticBody3D" parent="ShelteredStart"]
+position = Vector3(3.2, 1.1, 35)
+
+[node name="Mesh" type="MeshInstance3D" parent="ShelteredStart/EastWall"]
+mesh = SubResource("Mesh_shelter_wall")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ShelteredStart/EastWall"]
+shape = SubResource("Shape_shelter_wall")
+
+[node name="BackWall" type="StaticBody3D" parent="ShelteredStart"]
+position = Vector3(0, 1.1, 38.2)
+
+[node name="Mesh" type="MeshInstance3D" parent="ShelteredStart/BackWall"]
+mesh = SubResource("Mesh_shelter_back")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ShelteredStart/BackWall"]
+shape = SubResource("Shape_shelter_back")
 
 [node name="ValleyFloor" type="StaticBody3D" parent="."]
 position = Vector3(0, 0.08, -8)
@@ -110,6 +185,47 @@ mesh = SubResource("Mesh_hill_steep")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NorthSlope"]
 shape = SubResource("Shape_hill_steep")
+
+[node name="Overlook" type="StaticBody3D" parent="."]
+position = Vector3(4, 8.3, -45)
+
+[node name="Mesh" type="MeshInstance3D" parent="Overlook"]
+mesh = SubResource("Mesh_overlook")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Overlook"]
+shape = SubResource("Shape_overlook")
+
+[node name="RockDestination" type="Node3D" parent="."]
+
+[node name="RockA" type="StaticBody3D" parent="RockDestination"]
+position = Vector3(1, 2.5, -16)
+rotation_degrees = Vector3(0, 18, -8)
+
+[node name="Mesh" type="MeshInstance3D" parent="RockDestination/RockA"]
+mesh = SubResource("Mesh_rock_a")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RockDestination/RockA"]
+shape = SubResource("Shape_rock_a")
+
+[node name="RockB" type="StaticBody3D" parent="RockDestination"]
+position = Vector3(-2.2, 1.75, -15.2)
+rotation_degrees = Vector3(0, -24, 7)
+
+[node name="Mesh" type="MeshInstance3D" parent="RockDestination/RockB"]
+mesh = SubResource("Mesh_rock_b")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RockDestination/RockB"]
+shape = SubResource("Shape_rock_b")
+
+[node name="RockC" type="StaticBody3D" parent="RockDestination"]
+position = Vector3(3.1, 1.25, -14.8)
+rotation_degrees = Vector3(8, 32, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="RockDestination/RockC"]
+mesh = SubResource("Mesh_rock_c")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RockDestination/RockC"]
+shape = SubResource("Shape_rock_c")
 
 [node name="SouthSlope" type="StaticBody3D" parent="."]
 position = Vector3(-34, 3.2, 22)
