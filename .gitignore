@@ -1,5 +1,6 @@
 # Godot generated project cache and editor/import state
 .godot/
+*.import
 *.tmp
 
 # Exported builds and local packaging
