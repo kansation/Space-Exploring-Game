@@ -17,7 +17,7 @@ background_mode = 2
 sky = SubResource("Sky_chunks")
 ambient_light_source = 3
 ambient_light_color = Color(0.86, 0.86, 0.8, 1)
-ambient_light_energy = 1.25
+ambient_light_energy = 0.65
 tonemap_mode = 2
 
 [node name="ChunkedTerrain" type="Node3D"]
@@ -29,11 +29,11 @@ environment = SubResource("Environment_chunks")
 [node name="Sun" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-50, 150, 0)
 light_color = Color(1, 0.98, 0.93, 1)
-light_energy = 1.8
+light_energy = 2.0
 shadow_enabled = true
 directional_shadow_max_distance = 300.0
 shadow_bias = 0.08
-shadow_opacity = 0.45
+shadow_opacity = 0.78
 light_angular_distance = 4.0
 
 [node name="Chunks" type="Node3D" parent="."]
