@@ -112,7 +112,11 @@ func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) ->
 		rock.name = "Rock_%02d" % placed_count
 		rock.position = Vector3(x, height, z)
 		rock.rotation_degrees = Vector3(rock_rng.randf_range(-8.0, 8.0), rock_rng.randf_range(0.0, 360.0), rock_rng.randf_range(-8.0, 8.0))
-		rock.scale = Vector3.ONE * size
+		rock.scale = Vector3(
+			size * rock_rng.randf_range(0.82, 1.18),
+			size * rock_rng.randf_range(0.78, 1.12),
+			size * rock_rng.randf_range(0.82, 1.18)
+		)
 		placement_signature = placement_signature * 31 + int(round(x * 100.0))
 		placement_signature = placement_signature * 31 + int(round(z * 100.0))
 		placement_signature = placement_signature * 31 + int(round(size * 100.0))
@@ -129,49 +133,13 @@ func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) ->
 		placed_count += 1
 	print("Procedural rocks: seed=%d count=%d signature=%d" % [seed, placed_count, placement_signature])
 
-func _make_rock_mesh(material: Material, points: int, middle_radius: float, top_radius: float, height_variation: float) -> ArrayMesh:
-	var surface_tool := SurfaceTool.new()
-	surface_tool.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var rings := [0.0, 0.52, 1.0]
-	var radii := [0.5, middle_radius, top_radius]
-	for ring in range(2):
-		for point in range(points):
-			var a0 := TAU * float(point) / float(points)
-			var a1 := TAU * float((point + 1) % points) / float(points)
-			var r0: float = radii[ring] * (1.0 + sin(float(point * 17 + ring * 3)) * 0.12)
-			var r1: float = radii[ring] * (1.0 + sin(float((point + 1) * 17 + ring * 3)) * 0.12)
-			var y0: float = rings[ring]
-			var y1: float = rings[ring]
-			var next_y0: float = rings[ring + 1] + sin(float(point * 11 + 5)) * height_variation
-			var next_y1: float = rings[ring + 1] + sin(float((point + 1) * 11 + 5)) * height_variation
-			var p0 := Vector3(cos(a0) * r0, y0, sin(a0) * r0)
-			var p1 := Vector3(cos(a1) * r1, y1, sin(a1) * r1)
-			var p2 := Vector3(cos(a0) * radii[ring + 1], next_y0, sin(a0) * radii[ring + 1])
-			var p3 := Vector3(cos(a1) * radii[ring + 1], next_y1, sin(a1) * radii[ring + 1])
-			surface_tool.add_vertex(p0)
-			surface_tool.add_vertex(p2)
-			surface_tool.add_vertex(p1)
-			surface_tool.add_vertex(p1)
-			surface_tool.add_vertex(p2)
-			surface_tool.add_vertex(p3)
-	var bottom_center := Vector3(0.0, 0.0, 0.0)
-	var top_center := Vector3(0.0, 1.0, 0.0)
-	for point in range(points):
-		var a0 := TAU * float(point) / float(points)
-		var a1 := TAU * float((point + 1) % points) / float(points)
-		var bottom_a := Vector3(cos(a0) * radii[0], 0.0, sin(a0) * radii[0])
-		var bottom_b := Vector3(cos(a1) * radii[0], 0.0, sin(a1) * radii[0])
-		var top_a := Vector3(cos(a0) * radii[2], 1.0, sin(a0) * radii[2])
-		var top_b := Vector3(cos(a1) * radii[2], 1.0, sin(a1) * radii[2])
-		surface_tool.add_vertex(bottom_center)
-		surface_tool.add_vertex(bottom_b)
-		surface_tool.add_vertex(bottom_a)
-		surface_tool.add_vertex(top_center)
-		surface_tool.add_vertex(top_a)
-		surface_tool.add_vertex(top_b)
-	surface_tool.generate_normals()
-	var mesh := surface_tool.commit()
-	mesh.surface_set_material(0, material)
+func _make_rock_mesh(material: Material, points: int, middle_radius: float, top_radius: float, height_variation: float) -> Mesh:
+	var mesh := SphereMesh.new()
+	mesh.radial_segments = 16
+	mesh.rings = 8
+	mesh.radius = middle_radius
+	mesh.height = 1.0 + height_variation * 0.5
+	mesh.material = material
 	return mesh
 
 func _sample_height(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite, world_x: float, world_z: float) -> float:
