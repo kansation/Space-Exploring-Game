@@ -7,23 +7,34 @@ extends Node3D
 @export_range(0.005, 0.08, 0.005) var noise_scale := 0.025
 @export_range(0.0, 2.0, 0.05) var detail_height := 0.35
 @export_range(0.02, 0.3, 0.01) var detail_noise_scale := 0.09
+@export_range(1, 4, 1) var nearby_grid_radius := 1
 
 @onready var chunks_root: Node3D = $Chunks
 @onready var player: CharacterBody3D = $Player
 
-func _ready() -> void:
-	_generate_grid()
+var broad_noise: FastNoiseLite
+var detail_noise: FastNoiseLite
+var ground_material: ShaderMaterial
+var loaded_chunks: Dictionary = {}
+var loaded_center := Vector2i(999999, 999999)
 
-func _generate_grid() -> void:
-	var broad_noise := FastNoiseLite.new()
+func _ready() -> void:
+	_initialize_generation()
+	var center_height := _sample_height(broad_noise, detail_noise, 0.0, 0.0)
+	player.position = Vector3(0.0, center_height + 2.0, 0.0)
+	_update_chunk_window(true)
+	_verify_shared_edges()
+
+func _initialize_generation() -> void:
+	broad_noise = FastNoiseLite.new()
 	broad_noise.seed = world_seed
 	broad_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	broad_noise.frequency = noise_scale
-	var detail_noise := FastNoiseLite.new()
+	detail_noise = FastNoiseLite.new()
 	detail_noise.seed = world_seed + 7919
 	detail_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	detail_noise.frequency = detail_noise_scale
-	var ground_material := ShaderMaterial.new()
+	ground_material = ShaderMaterial.new()
 	ground_material.shader = preload("res://shaders/terrain_slope_blend.gdshader")
 	ground_material.set_shader_parameter("soil_texture", preload("res://assets/textures/rock_ground_1k.jpg"))
 	ground_material.set_shader_parameter("rock_texture", preload("res://assets/textures/rocks_ground_01_1k.jpg"))
@@ -31,15 +42,33 @@ func _generate_grid() -> void:
 	ground_material.set_shader_parameter("rock_slope_start", 0.015)
 	ground_material.set_shader_parameter("rock_slope_end", 0.08)
 
-	for chunk_z in range(-1, 2):
-		for chunk_x in range(-1, 2):
-			_generate_chunk(chunk_x, chunk_z, broad_noise, detail_noise, ground_material)
-	_verify_shared_edges(broad_noise, detail_noise)
+func _physics_process(_delta: float) -> void:
+	_update_chunk_window(false)
 
-	var center_height := _sample_height(broad_noise, detail_noise, 0.0, 0.0)
-	player.position = Vector3(0.0, center_height + 2.0, 0.0)
+func _update_chunk_window(force: bool) -> void:
+	var player_center := _world_to_chunk(player.global_position)
+	if not force and player_center == loaded_center:
+		return
+	var started := Time.get_ticks_usec()
+	var desired: Dictionary = {}
+	for chunk_z in range(player_center.y - nearby_grid_radius, player_center.y + nearby_grid_radius + 1):
+		for chunk_x in range(player_center.x - nearby_grid_radius, player_center.x + nearby_grid_radius + 1):
+			var key := Vector2i(chunk_x, chunk_z)
+			desired[key] = true
+			if not loaded_chunks.has(key):
+				loaded_chunks[key] = _generate_chunk(chunk_x, chunk_z)
+	for key in loaded_chunks.keys():
+		if not desired.has(key):
+			loaded_chunks[key].queue_free()
+			loaded_chunks.erase(key)
+	loaded_center = player_center
+	var elapsed_ms := float(Time.get_ticks_usec() - started) / 1000.0
+	print("Chunk window: centre=(%d,%d) active=%d generation_ms=%.2f" % [player_center.x, player_center.y, loaded_chunks.size(), elapsed_ms])
 
-func _verify_shared_edges(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) -> void:
+func _world_to_chunk(world_position: Vector3) -> Vector2i:
+	return Vector2i(floori((world_position.x + chunk_size * 0.5) / chunk_size), floori((world_position.z + chunk_size * 0.5) / chunk_size))
+
+func _verify_shared_edges() -> void:
 	var maximum_edge_gap := 0.0
 	for boundary in range(-1, 1):
 		for sample in range(chunk_resolution + 1):
@@ -47,20 +76,20 @@ func _verify_shared_edges(broad_noise: FastNoiseLite, detail_noise: FastNoiseLit
 			var vertical_gap: float = abs(_sample_height(broad_noise, detail_noise, (boundary + 1) * chunk_size, offset) - _sample_height(broad_noise, detail_noise, boundary * chunk_size + chunk_size, offset))
 			var horizontal_gap: float = abs(_sample_height(broad_noise, detail_noise, offset, (boundary + 1) * chunk_size) - _sample_height(broad_noise, detail_noise, offset, boundary * chunk_size + chunk_size))
 			maximum_edge_gap = max(maximum_edge_gap, max(vertical_gap, horizontal_gap))
-	var first_signature := _sample_signature(broad_noise, detail_noise)
-	var second_signature := _sample_signature(broad_noise, detail_noise)
+	var first_signature := _sample_signature()
+	var second_signature := _sample_signature()
 	assert(maximum_edge_gap == 0.0)
 	assert(first_signature == second_signature)
 	print("Chunked terrain: seed=%d chunks=9 edge_gap=%.6f reproducible=%s" % [world_seed, maximum_edge_gap, first_signature == second_signature])
 
-func _sample_signature(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) -> int:
+func _sample_signature() -> int:
 	var signature := 17
 	for coordinate in range(-2, 3):
 		var height := _sample_height(broad_noise, detail_noise, coordinate * chunk_size * 0.37, coordinate * chunk_size * -0.23)
 		signature = signature * 31 + int(round(height * 10000.0))
 	return signature
 
-func _generate_chunk(chunk_x: int, chunk_z: int, broad_noise: FastNoiseLite, detail_noise: FastNoiseLite, ground_material: Material) -> void:
+func _generate_chunk(chunk_x: int, chunk_z: int) -> Node3D:
 	var grid_size := chunk_resolution + 1
 	var chunk_origin := Vector2(chunk_x * chunk_size, chunk_z * chunk_size)
 	var heights := PackedFloat32Array()
@@ -123,6 +152,7 @@ func _generate_chunk(chunk_x: int, chunk_z: int, broad_noise: FastNoiseLite, det
 	collision.shape = heightmap
 	collision.scale = Vector3(chunk_size / chunk_resolution, 1.0, chunk_size / chunk_resolution)
 	body.add_child(collision)
+	return chunk
 
 func _sample_height(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite, world_x: float, world_z: float) -> float:
 	return broad_noise.get_noise_2d(world_x, world_z) * terrain_height + detail_noise.get_noise_2d(world_x, world_z) * detail_height
