@@ -1,7 +1,10 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/chunked_terrain.gd" id="1_chunks"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Shader" path="res://shaders/terrain_slope_blend.gdshader" id="3_terrain_shader"]
+[ext_resource type="Texture2D" path="res://assets/textures/rock_ground_1k.jpg" id="4_soil"]
+[ext_resource type="Texture2D" path="res://assets/textures/rocks_ground_01_1k.jpg" id="5_rock"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_chunks"]
 sky_top_color = Color(0.18, 0.3, 0.5, 1)

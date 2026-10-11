@@ -23,10 +23,13 @@ func _generate_grid() -> void:
 	detail_noise.seed = world_seed + 7919
 	detail_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	detail_noise.frequency = detail_noise_scale
-	var ground_material := StandardMaterial3D.new()
-	ground_material.albedo_color = Color(0.3, 0.36, 0.22, 1.0)
-	ground_material.roughness = 1.0
-	ground_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	var ground_material := ShaderMaterial.new()
+	ground_material.shader = preload("res://shaders/terrain_slope_blend.gdshader")
+	ground_material.set_shader_parameter("soil_texture", preload("res://assets/textures/rock_ground_1k.jpg"))
+	ground_material.set_shader_parameter("rock_texture", preload("res://assets/textures/rocks_ground_01_1k.jpg"))
+	ground_material.set_shader_parameter("texture_scale", 0.08)
+	ground_material.set_shader_parameter("rock_slope_start", 0.015)
+	ground_material.set_shader_parameter("rock_slope_end", 0.08)
 
 	for chunk_z in range(-1, 2):
 		for chunk_x in range(-1, 2):
