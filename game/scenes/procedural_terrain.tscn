@@ -23,6 +23,7 @@ tonemap_mode = 2
 [sub_resource type="StandardMaterial3D" id="Material_terrain"]
 albedo_color = Color(0.12, 0.38, 0.16, 1)
 roughness = 1.0
+cull_mode = 2
 
 [node name="ProceduralTerrain" type="Node3D"]
 script = ExtResource("1_terrain")
