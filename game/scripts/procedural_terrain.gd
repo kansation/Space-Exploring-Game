@@ -7,12 +7,19 @@ extends Node3D
 @export_range(0.02, 0.3, 0.01) var detail_noise_scale := 0.09
 @export_range(16, 128, 1) var mesh_resolution := 96
 @export var terrain_size := 100.0
+@export_range(0.0, 2.0, 0.01) var rock_density := 0.18
+@export_range(0.25, 4.0, 0.05) var rock_min_size := 0.6
+@export_range(0.25, 4.0, 0.05) var rock_max_size := 2.0
+@export var rock_spawn_exclusion_radius := 10.0
 
 @onready var terrain_mesh: MeshInstance3D = $TerrainMesh
 @onready var terrain_collision: CollisionShape3D = $TerrainCollision/CollisionShape3D
 @onready var player: CharacterBody3D = $Player
 
 func _ready() -> void:
+	for argument in OS.get_cmdline_args():
+		if argument.begins_with("--terrain-seed="):
+			seed = int(argument.trim_prefix("--terrain-seed="))
 	_generate_terrain()
 
 func _generate_terrain() -> void:
@@ -73,6 +80,64 @@ func _generate_terrain() -> void:
 
 	var center_height := _sample_height(noise, detail_noise, 0.0, 0.0)
 	player.position = Vector3(0.0, center_height + 2.0, 0.0)
+	_generate_rocks(noise, detail_noise)
+
+func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) -> void:
+	var rock_rng := RandomNumberGenerator.new()
+	rock_rng.seed = seed + 104729
+	var rock_material := StandardMaterial3D.new()
+	rock_material.albedo_color = Color(0.3, 0.31, 0.29, 1.0)
+	rock_material.roughness = 1.0
+	var rock_meshes: Array[Mesh] = []
+	var box := BoxMesh.new()
+	box.size = Vector3.ONE
+	box.material = rock_material
+	rock_meshes.append(box)
+	var cylinder := CylinderMesh.new()
+	cylinder.top_radius = 0.45
+	cylinder.bottom_radius = 0.55
+	cylinder.height = 1.0
+	cylinder.material = rock_material
+	rock_meshes.append(cylinder)
+	var sphere := SphereMesh.new()
+	sphere.radius = 0.55
+	sphere.height = 1.0
+	sphere.material = rock_material
+	rock_meshes.append(sphere)
+
+	var target_count := int(round(terrain_size * terrain_size / 100.0 * rock_density))
+	var placed_count := 0
+	var attempts := 0
+	var maximum_attempts := maxi(target_count * 12, 12)
+	var placement_signature := 17
+	while placed_count < target_count and attempts < maximum_attempts:
+		attempts += 1
+		var x := rock_rng.randf_range(-terrain_size * 0.5 + 2.0, terrain_size * 0.5 - 2.0)
+		var z := rock_rng.randf_range(-terrain_size * 0.5 + 2.0, terrain_size * 0.5 - 2.0)
+		if Vector2(x, z).length() < rock_spawn_exclusion_radius:
+			continue
+		var size := rock_rng.randf_range(rock_min_size, rock_max_size)
+		var height := _sample_height(broad_noise, detail_noise, x, z)
+		var rock := StaticBody3D.new()
+		rock.name = "Rock_%02d" % placed_count
+		rock.position = Vector3(x, height + size * 0.45, z)
+		rock.rotation_degrees = Vector3(rock_rng.randf_range(-8.0, 8.0), rock_rng.randf_range(0.0, 360.0), rock_rng.randf_range(-8.0, 8.0))
+		rock.scale = Vector3.ONE * size
+		placement_signature = placement_signature * 31 + int(round(x * 100.0))
+		placement_signature = placement_signature * 31 + int(round(z * 100.0))
+		placement_signature = placement_signature * 31 + int(round(size * 100.0))
+		$Rocks.add_child(rock)
+		var mesh_instance := MeshInstance3D.new()
+		mesh_instance.mesh = rock_meshes[rock_rng.randi_range(0, rock_meshes.size() - 1)]
+		rock.add_child(mesh_instance)
+		if size >= 1.25:
+			var collision := CollisionShape3D.new()
+			var shape := BoxShape3D.new()
+			shape.size = Vector3.ONE
+			collision.shape = shape
+			rock.add_child(collision)
+		placed_count += 1
+	print("Procedural rocks: seed=%d count=%d signature=%d" % [seed, placed_count, placement_signature])
 
 func _sample_height(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite, world_x: float, world_z: float) -> float:
 	return broad_noise.get_noise_2d(world_x, world_z) * terrain_height + detail_noise.get_noise_2d(world_x, world_z) * detail_height
