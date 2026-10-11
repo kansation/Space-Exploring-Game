@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 
@@ -50,6 +50,30 @@ size = Vector3(4, 0.2, 8)
 [sub_resource type="BoxShape3D" id="BoxShape_lower_floor"]
 size = Vector3(4, 0.2, 8)
 
+[sub_resource type="BoxMesh" id="BoxMesh_step_01"]
+size = Vector3(3.5, 0.1, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape_step_01"]
+size = Vector3(3.5, 0.1, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_step_02"]
+size = Vector3(3.5, 0.2, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape_step_02"]
+size = Vector3(3.5, 0.2, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_step_04"]
+size = Vector3(3.5, 0.4, 0.8)
+
+[sub_resource type="BoxShape3D" id="BoxShape_step_04"]
+size = Vector3(3.5, 0.4, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_step_roof"]
+size = Vector3(3.5, 0.2, 2.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape_step_roof"]
+size = Vector3(3.5, 0.2, 2.2)
+
 [node name="Main" type="Node3D"]
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
@@ -95,6 +119,44 @@ mesh = SubResource("BoxMesh_block_c")
 shape = SubResource("BoxShape_block_c")
 
 [node name="TerrainCourse" type="Node3D" parent="."]
+
+[node name="StepCourse" type="Node3D" parent="."]
+
+[node name="Step01" type="StaticBody3D" parent="StepCourse"]
+position = Vector3(-7, 0.05, 1.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="StepCourse/Step01"]
+mesh = SubResource("BoxMesh_step_01")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StepCourse/Step01"]
+shape = SubResource("BoxShape_step_01")
+
+[node name="Step02" type="StaticBody3D" parent="StepCourse"]
+position = Vector3(-7, 0.1, -1.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="StepCourse/Step02"]
+mesh = SubResource("BoxMesh_step_02")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StepCourse/Step02"]
+shape = SubResource("BoxShape_step_02")
+
+[node name="Step04" type="StaticBody3D" parent="StepCourse"]
+position = Vector3(-7, 0.2, -4.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="StepCourse/Step04"]
+mesh = SubResource("BoxMesh_step_04")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StepCourse/Step04"]
+shape = SubResource("BoxShape_step_04")
+
+[node name="LowOverhead" type="StaticBody3D" parent="StepCourse"]
+position = Vector3(-7, 1.82, -2.6)
+
+[node name="Mesh" type="MeshInstance3D" parent="StepCourse/LowOverhead"]
+mesh = SubResource("BoxMesh_step_roof")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StepCourse/LowOverhead"]
+shape = SubResource("BoxShape_step_roof")
 
 [node name="GentleRamp" type="StaticBody3D" parent="TerrainCourse"]
 position = Vector3(7, 0.9, -1)

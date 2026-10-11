@@ -5,7 +5,7 @@ extends CharacterBody3D
 @export var gravity := 9.8
 @export_range(1.0, 89.0, 1.0) var max_floor_angle_degrees := 42.0
 @export var floor_snap_distance := 0.25
-@export var step_height := 0.2
+@export var step_height := 0.25
 @export var stop_on_walkable_slopes := true
 @export var constant_slope_speed := true
 
@@ -54,8 +54,17 @@ func _try_step_up(horizontal_motion: Vector3) -> void:
 		return
 
 	var stepped_transform := global_transform.translated(Vector3.UP * step_height)
-	if not test_move(stepped_transform, horizontal_motion):
-		global_transform = stepped_transform
+	if test_move(stepped_transform, horizontal_motion):
+		return
+
+	var landing_transform := stepped_transform.translated(horizontal_motion)
+	var landing_collision := KinematicCollision3D.new()
+	if not test_move(landing_transform, Vector3.DOWN * (step_height + floor_snap_distance), landing_collision):
+		return
+	if landing_collision.get_normal().dot(Vector3.UP) < cos(floor_max_angle):
+		return
+
+	global_transform = stepped_transform
 
 func _rotate_view(relative_motion: Vector2) -> void:
 	rotate_y(-relative_motion.x * mouse_sensitivity)
