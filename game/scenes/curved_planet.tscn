@@ -40,6 +40,8 @@ shadow_enabled = true
 
 [node name="Patches" type="Node3D" parent="."]
 
+[node name="Boundaries" type="Node3D" parent="."]
+
 [node name="Player" type="CharacterBody3D" parent="."]
 script = ExtResource("2_player")
 position = Vector3(0, 42, 0)

@@ -19,10 +19,55 @@ func _ready() -> void:
 	noise.frequency = 0.08
 	_generate_patch(0, patch_ranges[0])
 	_generate_patch(1, patch_ranges[1])
-	var start := _surface_position(deg_to_rad(-12.0), 0.0)
+	_add_outer_boundaries()
+	var start := _surface_position(deg_to_rad(-16.0), 0.0)
 	player.global_position = start + start.normalized() * 2.0
 	player.set("planet_center", planet_center)
-	print("Curved planet: seed=%d radius=%.1f patches=2 edge_gap=%.6f reproducible=%s" % [world_seed, planet_radius, _edge_gap(), _reproducible()])
+	print("Curved planet: seed=%d radius=%.1f patches=2 edge_gap=%.6f reproducible=%s spawn_lon=-16.0 outer_boundaries=4 seam_open=true" % [world_seed, planet_radius, _edge_gap(), _reproducible()])
+
+func _add_outer_boundaries() -> void:
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.75, 0.24, 0.08, 1.0)
+	material.roughness = 0.85
+	_add_boundary_wall("WestBoundary", deg_to_rad(-24.0), 0.0, false, material)
+	_add_boundary_wall("EastBoundary", deg_to_rad(24.0), 0.0, false, material)
+	_add_boundary_wall("SouthBoundaryA", deg_to_rad(-12.0), deg_to_rad(-12.0), true, material)
+	_add_boundary_wall("SouthBoundaryB", deg_to_rad(-12.0), deg_to_rad(12.0), true, material)
+	_add_boundary_wall("NorthBoundaryA", deg_to_rad(12.0), deg_to_rad(-12.0), true, material)
+	_add_boundary_wall("NorthBoundaryB", deg_to_rad(12.0), deg_to_rad(12.0), true, material)
+
+func _add_boundary_wall(wall_name: String, primary_angle: float, secondary_angle: float, latitude_wall: bool, material: Material) -> void:
+	var position: Vector3
+	var along: Vector3
+	var normal: Vector3
+	var length: float
+	if latitude_wall:
+		position = _surface_position(secondary_angle, primary_angle)
+		along = Vector3(-sin(secondary_angle), 0.0, cos(secondary_angle)).normalized()
+		normal = Vector3(-sin(primary_angle) * cos(secondary_angle), cos(primary_angle), -sin(primary_angle) * sin(secondary_angle)).normalized()
+		length = deg_to_rad(patch_longitude_degrees) * planet_radius
+	else:
+		position = _surface_position(primary_angle, 0.0)
+		along = Vector3(-sin(0.0) * cos(primary_angle), cos(0.0), -sin(0.0) * sin(primary_angle)).normalized()
+		normal = Vector3(-sin(primary_angle), 0.0, cos(primary_angle)).normalized()
+		length = deg_to_rad(patch_latitude_degrees) * planet_radius
+	var up := (position - planet_center).normalized()
+	var wall := StaticBody3D.new()
+	wall.name = wall_name
+	wall.position = position + up * 1.25
+	wall.basis = Basis(along, up, normal)
+	$Boundaries.add_child(wall)
+	var mesh_instance := MeshInstance3D.new()
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(length, 2.5, 0.35)
+	mesh.material = material
+	mesh_instance.mesh = mesh
+	wall.add_child(mesh_instance)
+	var collision := CollisionShape3D.new()
+	var shape := BoxShape3D.new()
+	shape.size = mesh.size
+	collision.shape = shape
+	wall.add_child(collision)
 
 func _generate_patch(index: int, longitude_range: Vector2) -> void:
 	var grid_size := patch_resolution + 1
@@ -90,6 +135,6 @@ func _edge_gap() -> float:
 	return maximum
 
 func _reproducible() -> bool:
-	var first := _surface_position(deg_to_rad(-12.0), 0.0)
-	var second := _surface_position(deg_to_rad(-12.0), 0.0)
+	var first := _surface_position(deg_to_rad(-16.0), 0.0)
+	var second := _surface_position(deg_to_rad(-16.0), 0.0)
 	return first == second
