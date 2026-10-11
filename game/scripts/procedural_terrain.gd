@@ -2,7 +2,9 @@ extends Node3D
 
 @export var seed := 1337
 @export_range(0.5, 12.0, 0.5) var terrain_height := 2.5
-@export_range(0.005, 0.15, 0.005) var noise_scale := 0.045
+@export_range(0.005, 0.08, 0.005) var noise_scale := 0.025
+@export_range(0.0, 2.0, 0.05) var detail_height := 0.35
+@export_range(0.02, 0.3, 0.01) var detail_noise_scale := 0.09
 @export_range(16, 128, 1) var mesh_resolution := 96
 @export var terrain_size := 100.0
 
@@ -18,13 +20,19 @@ func _generate_terrain() -> void:
 	noise.seed = seed
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	noise.frequency = noise_scale
+	var detail_noise := FastNoiseLite.new()
+	detail_noise.seed = seed + 7919
+	detail_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	detail_noise.frequency = detail_noise_scale
 
 	var grid_size := mesh_resolution + 1
 	var heights := PackedFloat32Array()
 	heights.resize(grid_size * grid_size)
 	for z in range(grid_size):
 		for x in range(grid_size):
-			heights[z * grid_size + x] = noise.get_noise_2d(_grid_to_world(x), _grid_to_world(z)) * terrain_height
+			var world_x := _grid_to_world(x)
+			var world_z := _grid_to_world(z)
+			heights[z * grid_size + x] = _sample_height(noise, detail_noise, world_x, world_z)
 
 	var vertices := PackedVector3Array()
 	vertices.resize(grid_size * grid_size)
@@ -63,8 +71,11 @@ func _generate_terrain() -> void:
 	terrain_collision.shape = collision_shape
 	terrain_collision.scale = Vector3(terrain_size / mesh_resolution, 1.0, terrain_size / mesh_resolution)
 
-	var center_height := noise.get_noise_2d(0.0, 0.0) * terrain_height
+	var center_height := _sample_height(noise, detail_noise, 0.0, 0.0)
 	player.position = Vector3(0.0, center_height + 2.0, 0.0)
+
+func _sample_height(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite, world_x: float, world_z: float) -> float:
+	return broad_noise.get_noise_2d(world_x, world_z) * terrain_height + detail_noise.get_noise_2d(world_x, world_z) * detail_height
 
 func _add_face(indices: PackedInt32Array, normals: PackedVector3Array, vertices: PackedVector3Array, a: int, b: int, c: int) -> void:
 	indices.append(a)

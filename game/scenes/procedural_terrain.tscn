@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/procedural_terrain.gd" id="1_terrain"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
@@ -20,10 +20,11 @@ ambient_light_color = Color(0.55, 0.63, 0.78, 1)
 ambient_light_energy = 0.7
 tonemap_mode = 2
 
-[sub_resource type="StandardMaterial3D" id="Material_terrain"]
-albedo_color = Color(0.12, 0.38, 0.16, 1)
-roughness = 1.0
-cull_mode = 2
+[sub_resource type="Shader" id="Shader_terrain"]
+code = "shader_type spatial;\nrender_mode cull_disabled;\n\nuniform vec4 soil_color : source_color = vec4(0.12, 0.38, 0.16, 1.0);\nuniform vec4 rock_color : source_color = vec4(0.28, 0.3, 0.28, 1.0);\nuniform float rock_slope_start = 0.38;\nuniform float rock_slope_end = 0.62;\nvarying vec3 world_normal;\n\nvoid vertex() {\n    world_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);\n}\n\nvoid fragment() {\n    float slope = 1.0 - clamp(dot(normalize(world_normal), vec3(0.0, 1.0, 0.0)), 0.0, 1.0);\n    float rock_amount = smoothstep(rock_slope_start, rock_slope_end, slope);\n    ALBEDO = mix(soil_color.rgb, rock_color.rgb, rock_amount);\n    ROUGHNESS = 1.0;\n}"
+
+[sub_resource type="ShaderMaterial" id="Material_terrain"]
+shader = SubResource("Shader_terrain")
 
 [node name="ProceduralTerrain" type="Node3D"]
 script = ExtResource("1_terrain")
