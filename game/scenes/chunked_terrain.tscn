@@ -4,10 +4,10 @@
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_chunks"]
-sky_top_color = Color(0.07, 0.14, 0.28, 1)
-sky_horizon_color = Color(0.65, 0.75, 0.86, 1)
-ground_bottom_color = Color(0.08, 0.1, 0.12, 1)
-ground_horizon_color = Color(0.52, 0.55, 0.52, 1)
+sky_top_color = Color(0.18, 0.3, 0.5, 1)
+sky_horizon_color = Color(0.78, 0.84, 0.9, 1)
+ground_bottom_color = Color(0.18, 0.2, 0.2, 1)
+ground_horizon_color = Color(0.62, 0.64, 0.6, 1)
 
 [sub_resource type="Sky" id="Sky_chunks"]
 sky_material = SubResource("ProceduralSkyMaterial_chunks")
@@ -16,8 +16,8 @@ sky_material = SubResource("ProceduralSkyMaterial_chunks")
 background_mode = 2
 sky = SubResource("Sky_chunks")
 ambient_light_source = 3
-ambient_light_color = Color(0.55, 0.63, 0.78, 1)
-ambient_light_energy = 0.7
+ambient_light_color = Color(0.78, 0.8, 0.74, 1)
+ambient_light_energy = 1.0
 tonemap_mode = 2
 
 [node name="ChunkedTerrain" type="Node3D"]
@@ -27,12 +27,14 @@ script = ExtResource("1_chunks")
 environment = SubResource("Environment_chunks")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-rotation_degrees = Vector3(-48, -30, 0)
-light_color = Color(1, 0.96, 0.88, 1)
-light_energy = 1.15
+rotation_degrees = Vector3(-52, -28, 0)
+light_color = Color(1, 0.98, 0.93, 1)
+light_energy = 1.45
 shadow_enabled = true
 directional_shadow_max_distance = 300.0
-shadow_bias = 0.05
+shadow_bias = 0.08
+shadow_opacity = 0.65
+light_angular_distance = 4.0
 
 [node name="Chunks" type="Node3D" parent="."]
 

@@ -24,7 +24,7 @@ func _generate_grid() -> void:
 	detail_noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	detail_noise.frequency = detail_noise_scale
 	var ground_material := StandardMaterial3D.new()
-	ground_material.albedo_color = Color(0.12, 0.38, 0.16, 1.0)
+	ground_material.albedo_color = Color(0.3, 0.36, 0.22, 1.0)
 	ground_material.roughness = 1.0
 	ground_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 

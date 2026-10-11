@@ -204,4 +204,6 @@ Chunked terrain test — October 11, 2026: Added a separate fixed 3 × 3 chunk s
 
 Chunked lighting — October 11, 2026: Confirmed and tuned one fixed root-level `DirectionalLight3D` with shadows plus one root-level sky/ambient `WorldEnvironment` for the connected terrain scene. The lighting is shared by all generated chunks; no chunk-level lights, day/night cycle, orbit simulation, or physical sun object were added.
 
+Chunked lighting readability correction — October 11, 2026: Raised neutral ambient fill, brightened the sky, reduced ground saturation, softened directional shadow opacity/edge hardness, and explicitly enabled shadow casting on the player body. The fixed root-level daylight setup remains shared by all chunks; no lighting simulation or new world system was added.
+
 Revision record: October 9, 2026 — initial draft. October 10, 2026 — documentation repository initialized; Godot standard and Mono builds inspected, with the 4.7.2 Mono build selected. October 10, 2026 — empty F0 project and main scene created; Mobile renderer recorded as provisional and empty-scene validation completed. October 10, 2026 — bounded F1 movement implementation added and manually confirmed. October 10, 2026 — primitive F2 terrain collision course added; automated checks pass and manual slope/drop checks remain open.
