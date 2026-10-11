@@ -1,0 +1,125 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_landscape"]
+sky_top_color = Color(0.08, 0.16, 0.3, 1)
+sky_horizon_color = Color(0.62, 0.72, 0.82, 1)
+ground_bottom_color = Color(0.08, 0.1, 0.12, 1)
+ground_horizon_color = Color(0.5, 0.53, 0.5, 1)
+sun_angle_max = 18.0
+
+[sub_resource type="Sky" id="Sky_landscape"]
+sky_material = SubResource("ProceduralSkyMaterial_landscape")
+
+[sub_resource type="Environment" id="Environment_landscape"]
+background_mode = 2
+sky = SubResource("Sky_landscape")
+ambient_light_source = 3
+ambient_light_color = Color(0.55, 0.62, 0.78, 1)
+ambient_light_energy = 0.65
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="Material_ground"]
+albedo_color = Color(0.22, 0.32, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="Mesh_ground"]
+size = Vector3(100, 0.2, 100)
+material = SubResource("Material_ground")
+
+[sub_resource type="BoxShape3D" id="Shape_ground"]
+size = Vector3(100, 0.2, 100)
+
+[sub_resource type="BoxMesh" id="Mesh_hill_gentle"]
+size = Vector3(34, 0.5, 42)
+material = SubResource("Material_ground")
+
+[sub_resource type="BoxShape3D" id="Shape_hill_gentle"]
+size = Vector3(34, 0.5, 42)
+
+[sub_resource type="BoxMesh" id="Mesh_hill_steep"]
+size = Vector3(18, 0.5, 24)
+material = SubResource("Material_ground")
+
+[sub_resource type="BoxShape3D" id="Shape_hill_steep"]
+size = Vector3(18, 0.5, 24)
+
+[sub_resource type="BoxMesh" id="Mesh_valley"]
+size = Vector3(28, 0.2, 36)
+material = SubResource("Material_ground")
+
+[sub_resource type="BoxShape3D" id="Shape_valley"]
+size = Vector3(28, 0.2, 36)
+
+[node name="Landscape" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_landscape")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-48, -28, 0)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Ground"]
+position = Vector3(0, -0.1, 0)
+mesh = SubResource("Mesh_ground")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+position = Vector3(0, -0.1, 0)
+shape = SubResource("Shape_ground")
+
+[node name="ValleyFloor" type="StaticBody3D" parent="."]
+position = Vector3(0, 0.08, -8)
+
+[node name="Mesh" type="MeshInstance3D" parent="ValleyFloor"]
+mesh = SubResource("Mesh_valley")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ValleyFloor"]
+shape = SubResource("Shape_valley")
+
+[node name="WestHill" type="StaticBody3D" parent="."]
+position = Vector3(-28, 3.8, -12)
+rotation_degrees = Vector3(0, 0, -10)
+
+[node name="Mesh" type="MeshInstance3D" parent="WestHill"]
+mesh = SubResource("Mesh_hill_gentle")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestHill"]
+shape = SubResource("Shape_hill_gentle")
+
+[node name="EastHill" type="StaticBody3D" parent="."]
+position = Vector3(27, 4.5, -18)
+rotation_degrees = Vector3(0, 0, 12)
+
+[node name="Mesh" type="MeshInstance3D" parent="EastHill"]
+mesh = SubResource("Mesh_hill_gentle")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastHill"]
+shape = SubResource("Shape_hill_gentle")
+
+[node name="NorthSlope" type="StaticBody3D" parent="."]
+position = Vector3(4, 4.5, -37)
+rotation_degrees = Vector3(-18, 0, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="NorthSlope"]
+mesh = SubResource("Mesh_hill_steep")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthSlope"]
+shape = SubResource("Shape_hill_steep")
+
+[node name="SouthSlope" type="StaticBody3D" parent="."]
+position = Vector3(-34, 3.2, 22)
+rotation_degrees = Vector3(0, 0, 18)
+
+[node name="Mesh" type="MeshInstance3D" parent="SouthSlope"]
+mesh = SubResource("Mesh_hill_steep")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthSlope"]
+shape = SubResource("Shape_hill_steep")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector3(0, 1.0, 38)
