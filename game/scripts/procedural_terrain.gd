@@ -88,6 +88,7 @@ func _generate_rocks(broad_noise: FastNoiseLite, detail_noise: FastNoiseLite) ->
 	var rock_material := StandardMaterial3D.new()
 	rock_material.albedo_color = Color(0.3, 0.31, 0.29, 1.0)
 	rock_material.roughness = 1.0
+	rock_material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	var rock_meshes: Array[Mesh] = [
 		_make_rock_mesh(rock_material, 7, 0.58, 0.7, 0.34),
 		_make_rock_mesh(rock_material, 8, 0.52, 0.62, 0.42),
