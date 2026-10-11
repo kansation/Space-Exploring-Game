@@ -1,8 +1,8 @@
 extends Node3D
 
 @export var seed := 1337
-@export_range(0.5, 12.0, 0.5) var terrain_height := 4.0
-@export_range(0.005, 0.15, 0.005) var noise_scale := 0.035
+@export_range(0.5, 12.0, 0.5) var terrain_height := 2.5
+@export_range(0.005, 0.15, 0.005) var noise_scale := 0.045
 @export_range(16, 128, 1) var mesh_resolution := 96
 @export var terrain_size := 100.0
 
@@ -35,15 +35,14 @@ func _generate_terrain() -> void:
 			vertices[z * grid_size + x] = _vertex(x, z, heights, grid_size)
 
 	var indices := PackedInt32Array()
-	var collision_triangles := PackedVector3Array()
 	for z in range(mesh_resolution):
 		for x in range(mesh_resolution):
 			var a := z * grid_size + x
 			var b := z * grid_size + x + 1
 			var c := (z + 1) * grid_size + x
 			var d := (z + 1) * grid_size + x + 1
-			_add_face(indices, normals, vertices, collision_triangles, a, c, b)
-			_add_face(indices, normals, vertices, collision_triangles, b, c, d)
+			_add_face(indices, normals, vertices, a, c, b)
+			_add_face(indices, normals, vertices, b, c, d)
 
 	for index in range(normals.size()):
 		normals[index] = normals[index].normalized()
@@ -57,14 +56,17 @@ func _generate_terrain() -> void:
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, mesh_arrays)
 
 	terrain_mesh.mesh = mesh
-	var collision_shape := ConcavePolygonShape3D.new()
-	collision_shape.data = collision_triangles
+	var collision_shape := HeightMapShape3D.new()
+	collision_shape.map_width = grid_size
+	collision_shape.map_depth = grid_size
+	collision_shape.map_data = heights
 	terrain_collision.shape = collision_shape
+	terrain_collision.scale = Vector3(terrain_size / mesh_resolution, 1.0, terrain_size / mesh_resolution)
 
 	var center_height := noise.get_noise_2d(0.0, 0.0) * terrain_height
 	player.position = Vector3(0.0, center_height + 2.0, 0.0)
 
-func _add_face(indices: PackedInt32Array, normals: PackedVector3Array, vertices: PackedVector3Array, collision_triangles: PackedVector3Array, a: int, b: int, c: int) -> void:
+func _add_face(indices: PackedInt32Array, normals: PackedVector3Array, vertices: PackedVector3Array, a: int, b: int, c: int) -> void:
 	indices.append(a)
 	indices.append(b)
 	indices.append(c)
@@ -72,9 +74,6 @@ func _add_face(indices: PackedInt32Array, normals: PackedVector3Array, vertices:
 	normals[a] += normal
 	normals[b] += normal
 	normals[c] += normal
-	collision_triangles.append(vertices[a])
-	collision_triangles.append(vertices[b])
-	collision_triangles.append(vertices[c])
 
 func _vertex(x: int, z: int, heights: PackedFloat32Array, grid_size: int) -> Vector3:
 	return Vector3(_grid_to_world(x), heights[z * grid_size + x], _grid_to_world(z))
