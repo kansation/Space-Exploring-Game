@@ -28,8 +28,11 @@ environment = SubResource("Environment_chunks")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-48, -30, 0)
+light_color = Color(1, 0.96, 0.88, 1)
 light_energy = 1.15
 shadow_enabled = true
+directional_shadow_max_distance = 300.0
+shadow_bias = 0.05
 
 [node name="Chunks" type="Node3D" parent="."]
 
